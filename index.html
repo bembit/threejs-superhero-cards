@@ -1,239 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiple Three.js Canvases Test</title>
-    <style>
-        body { 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            background: #181818;
-        }
-        h2 {
-            color: #fff;
-        }
-        .cards-container { 
-            display: flex; 
-            gap: 20px; 
-        }
-        .card {
-            width: 300px;
-            height: 400px;
-            background: #222;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        .card:hover {
-            cursor: pointer;
-        }
-        .card-button {
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #990a41;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            z-index: 100;
-        }
-        .popup-hover {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #000;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            width: 100%;
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multiple Three.js Canvases</title>
+  <style>
+	*, *::before, *::after {
+		box-sizing: border-box;
+		margin: 0 0;
+		padding: 0 0;
+	}
+    body { 
+		display: flex; 
+		flex-direction: column;
+		justify-content: center; 
+		align-items: center; 
+		min-height: 100vh; 
+		background: #181818;
+    }
+    h2 {
+      	color: #fff;
+    }
+    .cards-container { 
+		display: flex; 
+		gap: 20px; 
+    }
+    .card {
+		width: 300px;
+		height: 550px;
+		background: #222;
+		border-radius: 10px;
+		overflow: hidden;
+		position: relative;
+		transition: all 0.1s ease-in-out;
+	}
+    .card:hover {
+		cursor:all-scroll;
+		box-shadow: 2px 2px 10px #000;
+		transform: scale(1.1);
+    }
+    .card-button {
+		position: absolute;
+		bottom: 10px;
+		left: 50%;
+		transform: translateX(-50%);
+		background-color: #990a41;
+		color: #fff;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+		font-weight: bold;
+		text-transform: uppercase;
+		z-index: 101;
+    }
+	.card-button:hover {
+		filter: brightness(1.2);
+		cursor: pointer;
+	}
+    canvas {
+		width: 100%;
+		height: 100%;
+		display: block;
+    }
+    .popup-hover-name {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		background-color: #000;
+		color: #fff;
+		padding: 10px 20px;
+		border-radius: 5px;
+		font-size: 16px;
+		font-weight: bold;
+		text-transform: uppercase;
+		width: 100%;
+		text-align: center;
+    }
+	.popup-container {
+		width: 100%;
+		height: 100%;
+		opacity: .8;
+		background-color: #000;
+		user-select: none;
+	}
+	.popup-hover-stats {
+		position: absolute;
+		top: 45%;
+		left: 50%;
+		height: 25%;
+		transform: translateX(-50%);
+		/* background-color: #000; */
+		color: #fff;
+		font-size: 16px;
+		font-weight: bold;
+		text-transform: uppercase;
+		width: 80%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		/* align-items: center; */
+	}
+	.popup-hover-description {
+		/* display: none; */
+		position: absolute;
+		top: 65%;
+		left: 50%;
+		height: 25%;
+		transform: translateX(-50%);
+		color: #fff;
+		font-size: 16px;
+		width: 80%;
+		/* padding: 10px 20px; */
+	}
+	.popup-hover-stats ul {
+		list-style-type: none;
+		padding: 0;
+		margin: 0;
+	}
+	.popup-hover-stats li {
+		/* font-size: 12px; */
+		padding: 3px 0;
+	}
+  </style>
 </head>
+
 <body>
-    <h2>Choose your destiny</h2>
-    <div class="cards-container">
-        <div class="card" data-model="catwoman.glb" data-name="Catwoman"><canvas></canvas></div>
-        <div class="card" data-model="batman.glb" data-name="The Batman"><canvas></canvas></div>
-        <div class="card" data-model="revflash.glb" data-name="Reverse Flash"><canvas></canvas></div>
-    </div>
+  <h2>Choose your destiny</h2>
+  <div class="cards-container">
+    <div class="card" data-model="catwoman.glb" data-name="Catwoman" data-description="Catwoman is the alter ego of Selina Kyle, a burglar in Gotham City who usually wears a skintight bodysuit and uses a bullwhip for a weapon. She was originally characterized as a supervillain and adversary of Batman." data-stats="Strenght: 30, Speed: 90, Health: 60"><canvas></canvas></div>
+    <div class="card" data-model="batman.glb" data-name="The Batman" data-description="Batman is the alias of Bruce Wayne, a wealthy American playboy, philanthropist. Batman is one of the most iconic characters in popular culture and has been listed among the greatest comic book superheroes and characters ever created." data-stats="Strenght: 65, Speed: 40, Health: 75"><canvas></canvas></div>
+    <div class="card" data-model="revflash.glb" data-name="Reverse Flash" data-description="Professor Eobard Thawne is depicted as a scientist from the 25th century who originally idolized the Flash. He replicated the accident that gave the Flash his powers." data-stats="Strenght: 20, Speed: 140, Health: 20"><canvas></canvas></div>
+  </div>
 
-    <!-- bonus spaghettiScript included 🍝🍝🍝 -->
-    <script type="module">
-        import * as THREE from 'https://unpkg.com/three@0.125.1/build/three.module.js';
-        import { GLTFLoader } from 'https://unpkg.com/three@0.125.1/examples/jsm/loaders/GLTFLoader.js';
-        import { OrbitControls } from 'https://unpkg.com/three@0.125.1/examples/jsm/controls/OrbitControls.js';
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.125.1/build/three.module.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.125.1/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.125.1/examples/jsm/controls/OrbitControls.js';
 
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll('.card').forEach((card) => {
-                setupCardScene(card);
-            });
+    class CardScene {
+      constructor(card) {
+        this.card = card;
+        this.canvas = card.querySelector('canvas');
+        this.modelPath = card.getAttribute('data-model');
+        this.modelName = card.getAttribute('data-name');
+		this.modelDescription = card.getAttribute('data-description');
+		this.modelStats = card.getAttribute('data-stats');
+
+        this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+        this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 100);
+        this.camera.position.set(0, 1, 3);
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.setupControls();
+
+        this.setupLights();
+        this.clock = new THREE.Clock();
+        this.mixer = null;
+        this.model = null;
+        this.animations = {}; // store animation actions by name
+
+        this.isLockedIn = false; // state flag
+
+        this.loader = new GLTFLoader();
+        this.loadModel();
+
+        this.animate();
+        window.addEventListener('resize', () => this.onResize());
+      }
+
+      setupControls() {
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.controls.minDistance = 1;
+        this.controls.maxDistance = 10;
+      }
+
+      setupLights() {
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(2, 2, 2);
+        this.scene.add(directionalLight);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        this.scene.add(ambientLight);
+      }
+
+      // helper to fetch an animation action by name (case-insensitive, partial match)
+      getAnimationAction(animations, name) {
+        const clip = animations.find(clip =>
+          clip.name.toLowerCase().includes(name.toLowerCase())
+        );
+        return clip ? this.mixer.clipAction(clip) : null;
+      }
+
+      loadModel() {
+        this.loader.load(this.modelPath, (gltf) => {
+          // add the model to the scene.
+          this.model = gltf.scene;
+          this.model.position.set(0, -1.5, 0);
+          this.scene.add(this.model);
+
+          this.camera.lookAt(this.model.position);
+
+          this.mixer = new THREE.AnimationMixer(this.model);
+          gltf.animations.forEach((clip) => {
+            console.log(`Animation clip: ${clip.name}`);
+          });
+
+          this.animations['stand'] = this.getAnimationAction(gltf.animations, 'stand');
+          this.animations['punch'] = this.getAnimationAction(gltf.animations, 'punch');
+          this.animations['jump']  = this.getAnimationAction(gltf.animations, 'jump');
+
+          if (this.animations['stand']) this.animations['stand'].play();
+
+          this.setupInteractions();
+        });
+      }
+
+      setupInteractions() {
+        // show popup, change animation and camera.
+        this.card.addEventListener("mouseenter", () => {
+          if (this.isLockedIn) return;
+          if (this.animations['stand']) this.animations['stand'].stop();
+          if (this.animations['punch']) this.animations['punch'].play();
+          this.camera.position.set(0, -1, 2);
+          this.showHoverPopups();
+
+			document.querySelectorAll('.card').forEach(card => {
+				if (card !== this.card) {
+					card.style.opacity = '0.5';
+				}
+			});
         });
 
-        function setupCardScene(card) {
-            const canvas = card.querySelector('canvas');
-            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        //hide popup, revert animations and camera.
+        this.card.addEventListener("mouseleave", () => {
+          if (this.isLockedIn) return;
+          if (this.animations['punch']) this.animations['punch'].stop();
+          if (this.animations['stand']) this.animations['stand'].play();
+          this.camera.position.set(0, 1, 3);
+          if (this.animations['jump']) this.animations['jump'].stop();
+          this.hideHoverPopups();
 
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-            // camera.position.set(-2, 0, 1); 
+		  	document.querySelectorAll('.card').forEach(card => {
+				if (card !== this.card) {
+					card.style.opacity = '1';
+				}
+			});
+        });
 
-            const controls = new OrbitControls(camera, renderer.domElement);
-            // configure zoom limits
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.minDistance = 1;
-            controls.maxDistance = 10;
+        // create and set up the lock-in button.
+        const cardButton = document.createElement("button");
+        cardButton.classList.add("card-button");
+        cardButton.textContent = "Ready";
+        this.card.appendChild(cardButton);
 
-            const light = new THREE.DirectionalLight(0xffffff, 1);
-            light.position.set(2, 2, 2);
-            scene.add(light);
+		// set up the name popup by default.
+		const nameDiv = document.createElement("div");
+		nameDiv.textContent = this.modelName;
+		nameDiv.classList.add("popup-hover-name");
+		this.card.appendChild(nameDiv);
 
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
-            scene.add(ambientLight);
-            
-            const clock = new THREE.Clock();
-            let isAnimationPlaying = false;
-            let isLockedIn = false;
-            let mixer;
-            let model;
-            const loader = new GLTFLoader();
+        cardButton.addEventListener("click", () => {
+          if (this.animations['jump']) this.animations['jump'].play();
+          if (this.animations['punch']) this.animations['punch'].stop();
+          if (this.animations['stand']) this.animations['stand'].stop();
 
-            const modelPath = card.getAttribute('data-model');
-            const modelName = card.getAttribute('data-name');
+		  if (this.animations['jump'] && this.isLockedIn) {
+			this.camera.position.set(0, -1, 2);
+			this.animations['jump'].stop();
+			this.animations['punch'].play();
+		  }
 
-            // helper function to play animations
-            function getAnimationByName(animations, name) {
-               return animations.find(clip => clip.name.toLowerCase().includes(name.toLowerCase())) || null;
-            }
+          this.camera.position.set(0, -1, 2);
+          this.isLockedIn = !this.isLockedIn;
+          cardButton.textContent = this.isLockedIn ? "Unready" : "Ready";
+          cardButton.style.backgroundColor = this.isLockedIn ? "#000" : "#990a41";
+          console.log(`Locked in: ${this.isLockedIn}`);
+        });
+      }
 
-            loader.load(modelPath, (gltf) => {
-                model = gltf.scene;
-                model.position.set(0, -1.5, 0); 
-                scene.add(model);
+	  showHoverPopups() {
+		if (this.card.querySelector(".popup-container")) return;
 
-                camera.position.set(0, 1, 3);
-                camera.lookAt(model.position);
+		const popupDiv = document.createElement("div");
+		popupDiv.classList.add("popup-container");
 
-            	mixer = new THREE.AnimationMixer(gltf.scene);
+		const descriptionDiv = document.createElement("div");
+		const  descriptionParagraph = document.createElement("p");
+		descriptionParagraph.textContent = this.modelDescription;
+		descriptionDiv.appendChild(descriptionParagraph);
+		descriptionDiv.classList.add("popup-hover-description");
+		popupDiv.appendChild(descriptionDiv);
 
-                gltf.animations.forEach((clip) => {
-                    // action for each animation and play it (if needed)
-                    const action = mixer.clipAction(clip);
-                    // action.play();
-                    console.log(clip.name);
-                });
+		// add ul for stats
+		const statsDiv = document.createElement("div");
+		statsDiv.classList.add("popup-hover-stats");
 
-                console.log(gltf.animations.length);
+		const statsList = document.createElement("ul");
 
-                // find animations by name
-                const idleAnimation = getAnimationByName(gltf.animations, "stand");
-                const jumpAnimation = getAnimationByName(gltf.animations, "punch");
-                const onClickAnimation = getAnimationByName(gltf.animations, "jump");
+		// split the comma-separated values and create list items
+		this.modelStats.split(",").forEach(stat => {
+			const statItem = document.createElement("li");
+			statItem.textContent = stat.trim();
+			statsList.appendChild(statItem);
+		});
 
-                const idleAction = idleAnimation ? mixer.clipAction(idleAnimation) : null;
-                const jumpAction = jumpAnimation ? mixer.clipAction(jumpAnimation) : null;
-                const onClickAction = onClickAnimation ? mixer.clipAction(onClickAnimation) : null;
-
-                if (idleAction) idleAction.play();
-
-                card.addEventListener("mouseenter", () => {
-                    if (isLockedIn) return;
-                    if (idleAction) idleAction.stop();
-                    if (jumpAction) jumpAction.play();
-                    camera.position.set(0, -1, 2);
-                    // if (popupHoverDiv) return;
-                    const popupHoverDiv = document.createElement("div");
-                    popupHoverDiv.textContent = modelName;
-                    popupHoverDiv.classList.add("popup-hover");
-                    card.appendChild(popupHoverDiv);
-                });
-
-                card.addEventListener("mouseleave", () => {
-                    if (isLockedIn) return;
-                    if (jumpAction) jumpAction.stop();
-                    if (idleAction) idleAction.play();
-                    camera.position.set(0, 1, 3);
-                    if (onClickAction) onClickAction.stop();
-                    const popupHoverDiv = document.querySelector(".popup-hover");
-                    if (popupHoverDiv) popupHoverDiv.remove();
-                });
-
-                // best practice to create button styles here
-                const cardButton = document.createElement("button");
-                cardButton.classList.add("card-button");
-                cardButton.textContent = "Lock in";
-                card.appendChild(cardButton);
-
-                cardButton.addEventListener("click", () => {
-                    if (onClickAction) onClickAction.play();
-                    if (jumpAction) jumpAction.stop();
-                    if (idleAction) idleAction.stop();
-                    camera.position.set(0, -1, 2);
-                    isLockedIn = !isLockedIn;
-                    cardButton.textContent = isLockedIn ? "Unlock" : "Lock in";
-                    cardButton.style.backgroundColor = isLockedIn ? "#000" : "#990a41";
-                    // cardButton.style.backgroundColor = "#000";
-                    console.log(isLockedIn);
-                });
-
-                // model name based animations:
-                // extract model name from file path
-                // const modelName = modelPath.split('/').pop().split('.')[0]; 
-
-                // let idleName = "Idle";
-                // let jumpName = "Jump";
-
-                // if (modelName === "robot") {
-                //     idleName = "Standby";
-                //     jumpName = "Leap";
-                // } else if (modelName === "warrior") {
-                //     idleName = "Ready";
-                //     jumpName = "Attack";
-                // }
-
-                // const idleAnimation = getAnimationByName(gltf.animations, idleName);
-                // const jumpAnimation = getAnimationByName(gltf.animations, jumpName);
-            });
-
-            function animate() {
-                requestAnimationFrame(animate);
-
-                controls.update();
-
-                const delta = clock.getDelta();
-                if (mixer) mixer.update(delta);
-
-                renderer.render(scene, camera);
-            }
-            animate();
+		statsDiv.appendChild(statsList);
+		popupDiv.appendChild(statsDiv);
 
 
+		this.card.appendChild(popupDiv);
+	  }
 
-            window.addEventListener('resize', () => {
-                camera.aspect = canvas.clientWidth / canvas.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-            });
-        }
-    </script>
+	  hideHoverPopups() {
+		const popupDiv = this.card.querySelector(".popup-container");
+		// if (popupDiv) popupDiv.remove();
+	  }
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+        this.controls.update();
+        const delta = this.clock.getDelta();
+        if (this.mixer) this.mixer.update(delta);
+        this.renderer.render(this.scene, this.camera);
+      }
+
+      onResize() {
+        this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
+      }
+    }
+
+    // initialize a CardScene for every .card element
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.card').forEach(card => {
+        new CardScene(card);
+      });
+    });
+
+  </script>
 </body>
 </html>
