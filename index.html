@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Three.js Canvases Test</title>
+    <style>
+        body { 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: #181818;
+        }
+        h2 {
+            color: #fff;
+        }
+        .cards-container { 
+            display: flex; 
+            gap: 20px; 
+        }
+        .card {
+            width: 300px;
+            height: 400px;
+            background: #222;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .card:hover {
+            cursor: pointer;
+        }
+        .card-button {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #990a41;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 100;
+        }
+        .popup-hover {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h2>Choose your destiny</h2>
+    <div class="cards-container">
+        <div class="card" data-model="catwoman.glb" data-name="Catwoman"><canvas></canvas></div>
+        <div class="card" data-model="batman.glb" data-name="The Batman"><canvas></canvas></div>
+        <div class="card" data-model="revflash.glb" data-name="Reverse Flash"><canvas></canvas></div>
+    </div>
+
+    <!-- bonus spaghettiScript included 🍝🍝🍝 -->
+    <script type="module">
+        import * as THREE from 'https://unpkg.com/three@0.125.1/build/three.module.js';
+        import { GLTFLoader } from 'https://unpkg.com/three@0.125.1/examples/jsm/loaders/GLTFLoader.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.125.1/examples/jsm/controls/OrbitControls.js';
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.card').forEach((card) => {
+                setupCardScene(card);
+            });
+        });
+
+        function setupCardScene(card) {
+            const canvas = card.querySelector('canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+            // camera.position.set(-2, 0, 1); 
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            // configure zoom limits
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 1;
+            controls.maxDistance = 10;
+
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(2, 2, 2);
+            scene.add(light);
+
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+            scene.add(ambientLight);
+            
+            const clock = new THREE.Clock();
+            let isAnimationPlaying = false;
+            let isLockedIn = false;
+            let mixer;
+            let model;
+            const loader = new GLTFLoader();
+
+            const modelPath = card.getAttribute('data-model');
+            const modelName = card.getAttribute('data-name');
+
+            // helper function to play animations
+            function getAnimationByName(animations, name) {
+               return animations.find(clip => clip.name.toLowerCase().includes(name.toLowerCase())) || null;
+            }
+
+            loader.load(modelPath, (gltf) => {
+                model = gltf.scene;
+                model.position.set(0, -1.5, 0); 
+                scene.add(model);
+
+                camera.position.set(0, 1, 3);
+                camera.lookAt(model.position);
+
+            	mixer = new THREE.AnimationMixer(gltf.scene);
+
+                gltf.animations.forEach((clip) => {
+                    // action for each animation and play it (if needed)
+                    const action = mixer.clipAction(clip);
+                    // action.play();
+                    console.log(clip.name);
+                });
+
+                console.log(gltf.animations.length);
+
+                // find animations by name
+                const idleAnimation = getAnimationByName(gltf.animations, "stand");
+                const jumpAnimation = getAnimationByName(gltf.animations, "punch");
+                const onClickAnimation = getAnimationByName(gltf.animations, "jump");
+
+                const idleAction = idleAnimation ? mixer.clipAction(idleAnimation) : null;
+                const jumpAction = jumpAnimation ? mixer.clipAction(jumpAnimation) : null;
+                const onClickAction = onClickAnimation ? mixer.clipAction(onClickAnimation) : null;
+
+                if (idleAction) idleAction.play();
+
+                card.addEventListener("mouseenter", () => {
+                    if (isLockedIn) return;
+                    if (idleAction) idleAction.stop();
+                    if (jumpAction) jumpAction.play();
+                    camera.position.set(0, -1, 2);
+                    // if (popupHoverDiv) return;
+                    const popupHoverDiv = document.createElement("div");
+                    popupHoverDiv.textContent = modelName;
+                    popupHoverDiv.classList.add("popup-hover");
+                    card.appendChild(popupHoverDiv);
+                });
+
+                card.addEventListener("mouseleave", () => {
+                    if (isLockedIn) return;
+                    if (jumpAction) jumpAction.stop();
+                    if (idleAction) idleAction.play();
+                    camera.position.set(0, 1, 3);
+                    if (onClickAction) onClickAction.stop();
+                    const popupHoverDiv = document.querySelector(".popup-hover");
+                    if (popupHoverDiv) popupHoverDiv.remove();
+                });
+
+                // best practice to create button styles here
+                const cardButton = document.createElement("button");
+                cardButton.classList.add("card-button");
+                cardButton.textContent = "Lock in";
+                card.appendChild(cardButton);
+
+                cardButton.addEventListener("click", () => {
+                    if (onClickAction) onClickAction.play();
+                    if (jumpAction) jumpAction.stop();
+                    if (idleAction) idleAction.stop();
+                    camera.position.set(0, -1, 2);
+                    isLockedIn = !isLockedIn;
+                    cardButton.textContent = isLockedIn ? "Unlock" : "Lock in";
+                    cardButton.style.backgroundColor = isLockedIn ? "#000" : "#990a41";
+                    // cardButton.style.backgroundColor = "#000";
+                    console.log(isLockedIn);
+                });
+
+                // model name based animations:
+                // extract model name from file path
+                // const modelName = modelPath.split('/').pop().split('.')[0]; 
+
+                // let idleName = "Idle";
+                // let jumpName = "Jump";
+
+                // if (modelName === "robot") {
+                //     idleName = "Standby";
+                //     jumpName = "Leap";
+                // } else if (modelName === "warrior") {
+                //     idleName = "Ready";
+                //     jumpName = "Attack";
+                // }
+
+                // const idleAnimation = getAnimationByName(gltf.animations, idleName);
+                // const jumpAnimation = getAnimationByName(gltf.animations, jumpName);
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                controls.update();
+
+                const delta = clock.getDelta();
+                if (mixer) mixer.update(delta);
+
+                renderer.render(scene, camera);
+            }
+            animate();
+
+
+
+            window.addEventListener('resize', () => {
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            });
+        }
+    </script>
+</body>
+</html>
