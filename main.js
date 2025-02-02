@@ -162,8 +162,20 @@ class CardScene {
 		const statsList = document.createElement("ul");
 
 		this.modelStats.split(",").forEach(stat => {
+			const [key, value] = stat.split(":").map(item => item.trim());
 			const statItem = document.createElement("li");
-			statItem.textContent = stat.trim();
+
+			// create spans for keys and values
+			const statKeySpan = document.createElement("span");
+			statKeySpan.classList.add("stat-key");
+			statKeySpan.textContent = `${key}: `;
+
+			const statValueSpan = document.createElement("span");
+			statValueSpan.classList.add("stat-value");
+			statValueSpan.textContent = value;
+
+			statItem.appendChild(statKeySpan);
+			statItem.appendChild(statValueSpan);
 			statsList.appendChild(statItem);
 		});
 

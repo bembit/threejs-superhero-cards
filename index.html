@@ -3,34 +3,13 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Multiple Three.js Canvases</title>
+	<title>Cards Demo with Multiple Three.js Canvases</title>
 	<link rel="stylesheet" href="./styles.css">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Notable&family=Permanent+Marker&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Notable&family=Permanent+Marker&display=swap" rel="stylesheet">
 	<script src="./main.js" type="module" defer></script>
 	<style>
-        /* .siren {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            transform: translateX(-50%);
-            border-radius: 50%;
-            animation: sirenAnim 0.6s infinite alternate;
-            opacity: 0.6;
-            z-index: -1;
-			filter: blur(25px);
-        }
-        .siren.red { background: rgba(255, 0, 0, 0.8); }
-        .siren.blue { background: rgba(0, 0, 255, 0.8); animation-delay: 0.3s; }
-
-        @keyframes sirenAnim {
-            0% { transform: translateX(-50%) scale(1); }
-            100% { transform: translateX(-50%) scale(1.2); }
-        } */
-
 		.siren-container {
 			position: absolute;
 			top: 50%;
@@ -145,11 +124,11 @@
 </head>
 
 <body>
-	<h2>Choose your destiny</h2>
+	<h2>Getting carried away on a Saturday evening.</h2>
 	<div class="cards-container">
-		<div id="card1" class="card" data-model="catwoman.glb" data-name="Catwoman" data-description="Catwoman is the alter ego of Selina Kyle, a burglar in Gotham City who usually wears a skintight bodysuit and uses a bullwhip for a weapon. She was originally characterized as a supervillain and adversary of Batman." data-stats="Strenght: 30, Speed: 90, Health: 60"><canvas></canvas></div>
-		<div id="card2" class="card" data-model="batman.glb" data-name="The Batman" data-description="Batman is the alias of Bruce Wayne, a wealthy American playboy, philanthropist. Batman is one of the most iconic characters in popular culture and has been listed among the greatest comic book superheroes and characters ever created." data-stats="Strenght: 65, Speed: 40, Health: 75"><canvas></canvas></div>
-		<div id="card3" class="card" data-model="revflash.glb" data-name="Reverse-Flash" data-description="Professor Eobard Thawne is depicted as a scientist from the 25th century who originally idolized the Flash. He replicated the accident that gave the Flash his powers." data-stats="Strenght: 20, Speed: 140, Health: 20"><canvas></canvas></div>
+		<div id="card1" class="card" data-model="catwoman.glb" data-name="Catwoman" data-description="Catwoman is the alter ego of Selina Kyle, a burglar in Gotham City who usually wears a skintight bodysuit and uses a bullwhip for a weapon. She was originally characterized as a supervillain and adversary of Batman." data-stats="Strength: 30, Speed: 90, Health: 60"><canvas></canvas></div>
+		<div id="card2" class="card" data-model="batman.glb" data-name="The Batman" data-description="Batman is the alias of Bruce Wayne, a wealthy American playboy, philanthropist. Batman is one of the most iconic characters in popular culture and has been listed among the greatest comic book superheroes and characters ever created." data-stats="Strength: 65, Speed: 40, Health: 75"><canvas></canvas></div>
+		<div id="card3" class="card" data-model="revflash.glb" data-name="Reverse-Flash" data-description="Professor Eobard Thawne is depicted as a scientist from the 25th century who originally idolized the Flash. He replicated the accident that gave the Flash his powers." data-stats="Strength: 20, Speed: 140, Health: 20"><canvas></canvas></div>
 	</div>
 
 	<script>
