@@ -3,20 +3,194 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Multiple Three.js Canvases</title>
+	<title>Cards Demo with Multiple Three.js Canvases</title>
 	<link rel="stylesheet" href="./styles.css">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Notable&family=Permanent+Marker&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Notable&family=Permanent+Marker&display=swap" rel="stylesheet">
 	<script src="./main.js" type="module" defer></script>
+	<style>
+		.siren-container {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 80%;
+			height: 80%;
+			transform: translate(-50%, -50%);
+			display: flex;
+			justify-content: space-between;
+			z-index: -1;
+			opacity: 0.3;
+			filter: blur(20px);
+		}
+
+		.siren {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			filter: blur(120px);
+			opacity: 0.2;
+		}
+
+		.siren.red {
+			background: rgba(255, 0, 0, 0.8);
+			animation: sirenRed 0.6s infinite alternate;
+		}
+
+		.siren.blue {
+			background: rgba(0, 0, 255, 0.8);
+			animation: sirenBlue 0.6s infinite alternate;
+		}
+
+		@keyframes sirenRed {
+			0% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+
+		@keyframes sirenBlue {
+			0% { opacity: 0; }
+			100% { opacity: 1; }
+		}
+
+        .bat-signal {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 100, 0.8) 0%, rgba(255, 255, 100, 0.2) 50%, transparent 80%);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            transform: translateX(-50%);
+            opacity: 0.5;
+            z-index: -1;
+			/* clip path blocks the blur */
+			filter: blur(250px);
+			/* box-shadow: 0px 0px 150px 75px rgba(255, 255, 100, 0.8); */
+        }
+
+		.lightning {
+			position: absolute;
+			width: 1px;
+			height: 80px;
+			background: rgb(250, 255, 184);
+			box-shadow: 0 0 8px white;
+			animation: flash 0.5s linear infinite alternate, moveLightning 1s linear forwards;
+			transform: scale(10);
+			filter: blur(2px);
+			z-index: -1;
+		}
+
+		/* zigzag using pseudo-elements */
+		.lightning::before, 
+		.lightning::after {
+			content: "";
+			position: absolute;
+			width: 1px;
+			height: 40px;
+			background: white;
+			box-shadow: 0 0 8px white;
+		}
+
+		.lightning::before {
+			transform: rotate(30deg);
+			top: 30px;
+			left: -10px;
+		}
+
+		.lightning::after {
+			transform: rotate(-30deg);
+			top: 55px;
+			left: 10px;
+		}
+
+		@keyframes flash {
+			0% { opacity: 1; }
+			100% { opacity: 0.3; }
+		}
+
+		/* random movement before settling */
+		@keyframes moveLightning {
+			0%, 20%, 40%, 60%, 80% {
+				top: calc(10% + 40vh * random());
+				left: calc(10% + 80vw * random());
+			}
+			100% {
+				top: 50%;
+				left: 50%;
+			}
+		}
+
+    </style>
 </head>
 
 <body>
-	<h2>Choose your destiny</h2>
+	<h2>ThreeJS models and animations demo with some CSS.</h2>
 	<div class="cards-container">
-		<div class="card" data-model="catwoman.glb" data-name="Catwoman" data-description="Catwoman is the alter ego of Selina Kyle, a burglar in Gotham City who usually wears a skintight bodysuit and uses a bullwhip for a weapon. She was originally characterized as a supervillain and adversary of Batman." data-stats="Strenght: 30, Speed: 90, Health: 60"><canvas></canvas></div>
-		<div class="card" data-model="batman.glb" data-name="The Batman" data-description="Batman is the alias of Bruce Wayne, a wealthy American playboy, philanthropist. Batman is one of the most iconic characters in popular culture and has been listed among the greatest comic book superheroes and characters ever created." data-stats="Strenght: 65, Speed: 40, Health: 75"><canvas></canvas></div>
-		<div class="card" data-model="revflash.glb" data-name="Reverse-Flash" data-description="Professor Eobard Thawne is depicted as a scientist from the 25th century who originally idolized the Flash. He replicated the accident that gave the Flash his powers." data-stats="Strenght: 20, Speed: 140, Health: 20"><canvas></canvas></div>
+		<div id="card1" class="card" data-model="catwoman.glb" data-name="Catwoman" data-description="Catwoman is the alter ego of Selina Kyle, a burglar in Gotham City who usually wears a skintight bodysuit and uses a bullwhip for a weapon. She was originally characterized as a supervillain and adversary of Batman." data-stats="Strength: 30, Speed: 90, Health: 60"><canvas></canvas></div>
+		<div id="card2" class="card" data-model="batman.glb" data-name="The Batman" data-description="Batman is the alias of Bruce Wayne, a wealthy American playboy, philanthropist. Batman is one of the most iconic characters in popular culture and has been listed among the greatest comic book superheroes and characters ever created." data-stats="Strength: 65, Speed: 40, Health: 75"><canvas></canvas></div>
+		<div id="card3" class="card" data-model="revflash.glb" data-name="Reverse-Flash" data-description="Professor Eobard Thawne is depicted as a scientist from the 25th century who originally idolized the Flash. He replicated the accident that gave the Flash his powers." data-stats="Strength: 20, Speed: 140, Health: 20"><canvas></canvas></div>
 	</div>
+
+	<script>
+        const body = document.body;
+        // POLICE SIREN EFFECT
+		document.getElementById('card1').addEventListener('mouseenter', () => {
+			const sirenContainer = document.createElement('div');
+			sirenContainer.className = 'siren-container';
+
+			const redSiren = document.createElement('div');
+			redSiren.className = 'siren red';
+
+			const blueSiren = document.createElement('div');
+			blueSiren.className = 'siren blue';
+
+			sirenContainer.appendChild(redSiren);
+			sirenContainer.appendChild(blueSiren);
+			document.body.appendChild(sirenContainer);
+
+			document.getElementById('card1').addEventListener('mouseleave', () => {
+				sirenContainer.remove();
+			}, { once: true });
+		});
+
+        // BAT SIGNAL EFFECT
+        document.getElementById('card2').addEventListener('mouseenter', () => {
+            const batSignal = document.createElement('div');
+            batSignal.className = 'bat-signal';
+            body.appendChild(batSignal);
+            document.getElementById('card2').addEventListener('mouseleave', () => {
+                batSignal.remove();
+            }, { once: true });
+        });
+
+
+		// LIGHTNING EFFECT
+        document.getElementById('card3').addEventListener('mouseenter', () => {
+		const lightningBolt = document.createElement('div');
+		lightningBolt.className = 'lightning';
+		body.appendChild(lightningBolt);
+
+		let flashes = 0;
+
+		const flashInterval = setInterval(() => {
+			if (flashes < 5) {
+				lightningBolt.style.left = Math.random() * window.innerWidth + 'px';
+				lightningBolt.style.top = Math.random() * window.innerHeight + 'px';
+				flashes++;
+			} else {
+				// after 5 flashes, move to the center and stop interval
+				lightningBolt.style.left = `${window.innerWidth / 2}px`;
+				lightningBolt.style.top = `${window.innerHeight / 2}px`;
+				clearInterval(flashInterval);
+			}
+		}, 150); // flashevery 150ms
+
+		document.getElementById('card3').addEventListener('mouseleave', () => {
+			lightningBolt.remove();
+			clearInterval(flashInterval);
+			}, { once: true });
+		});
+
+    </script>
 </body>
 </html>

@@ -53,7 +53,7 @@ class CardScene {
 	// helper to fetch an animation action by name (case-insensitive, partial match)
 	getAnimationAction(animations, name) {
 		const clip = animations.find(clip =>
-		clip.name.toLowerCase().includes(name.toLowerCase())
+			clip.name.toLowerCase().includes(name.toLowerCase())
 		);
 		return clip ? this.mixer.clipAction(clip) : null;
 	}
@@ -69,7 +69,7 @@ class CardScene {
 
 			this.mixer = new THREE.AnimationMixer(this.model);
 			gltf.animations.forEach((clip) => {
-			console.log(`Animation clip: ${clip.name}`);
+				// console.log(`Animation clip: ${clip.name}`);
 			});
 
 			this.animations['stand'] = this.getAnimationAction(gltf.animations, 'stand');
@@ -100,19 +100,18 @@ class CardScene {
 
 		//hide popup, revert animations and camera.
 		this.card.addEventListener("mouseleave", () => {
-		if (this.isLockedIn) return;
-		if (this.animations['punch']) this.animations['punch'].stop();
-		if (this.animations['stand']) this.animations['stand'].play();
-		this.camera.position.set(0, 1, 3);
-		if (this.animations['jump']) this.animations['jump'].stop();
-		this.hideHoverPopups();
+			if (this.isLockedIn) return;
+			if (this.animations['punch']) this.animations['punch'].stop();
+			if (this.animations['stand']) this.animations['stand'].play();
+			this.camera.position.set(0, 1, 3);
+			if (this.animations['jump']) this.animations['jump'].stop();
+			this.hideHoverPopups();
 
 			document.querySelectorAll('.card').forEach(card => {
 				if (card !== this.card) {
 					card.style.opacity = '1';
 				}
 			});
-
 		});
 
 		// create and set up the lock-in button.
@@ -142,7 +141,7 @@ class CardScene {
 		this.isLockedIn = !this.isLockedIn;
 		cardButton.textContent = this.isLockedIn ? "Unready" : "Ready";
 		cardButton.style.backgroundColor = this.isLockedIn ? "#000" : "#990a41";
-		console.log(`Locked in: ${this.isLockedIn}`);
+			// console.log(`Locked in: ${this.isLockedIn}`);
 		});
 	}
 
@@ -163,8 +162,20 @@ class CardScene {
 		const statsList = document.createElement("ul");
 
 		this.modelStats.split(",").forEach(stat => {
+			const [key, value] = stat.split(":").map(item => item.trim());
 			const statItem = document.createElement("li");
-			statItem.textContent = stat.trim();
+
+			// create spans for keys and values
+			const statKeySpan = document.createElement("span");
+			statKeySpan.classList.add("stat-key");
+			statKeySpan.textContent = `${key}: `;
+
+			const statValueSpan = document.createElement("span");
+			statValueSpan.classList.add("stat-value");
+			statValueSpan.textContent = value;
+
+			statItem.appendChild(statKeySpan);
+			statItem.appendChild(statValueSpan);
 			statsList.appendChild(statItem);
 		});
 
