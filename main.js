@@ -100,19 +100,18 @@ class CardScene {
 
 		//hide popup, revert animations and camera.
 		this.card.addEventListener("mouseleave", () => {
-		if (this.isLockedIn) return;
-		if (this.animations['punch']) this.animations['punch'].stop();
-		if (this.animations['stand']) this.animations['stand'].play();
-		this.camera.position.set(0, 1, 3);
-		if (this.animations['jump']) this.animations['jump'].stop();
-		this.hideHoverPopups();
+			if (this.isLockedIn) return;
+			if (this.animations['punch']) this.animations['punch'].stop();
+			if (this.animations['stand']) this.animations['stand'].play();
+			this.camera.position.set(0, 1, 3);
+			if (this.animations['jump']) this.animations['jump'].stop();
+			this.hideHoverPopups();
 
 			document.querySelectorAll('.card').forEach(card => {
 				if (card !== this.card) {
 					card.style.opacity = '1';
 				}
 			});
-
 		});
 
 		// create and set up the lock-in button.

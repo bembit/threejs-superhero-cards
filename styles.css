@@ -13,6 +13,7 @@ body {
     font-family: "Permanent Marker", serif;
     /* font-family: "Notable", serif; */
     /* letter-spacing: 1px; */
+    overflow: hidden;
 }
 h2 {
       color: #fff;
