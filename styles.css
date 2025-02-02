@@ -67,7 +67,6 @@ canvas {
     width: 100%;
     height: 100%;
     opacity: .8;
-    /* background-color: #000; */
     user-select: none;
 }
 .popup-hover-name {
@@ -84,6 +83,14 @@ canvas {
     text-align: center;
     z-index: 102;
     cursor: initial;
+}
+p {
+    margin-top: 100px;
+    color: #fff;
+    a,a:visited {
+        text-decoration: none;
+        color: #990a41;
+    }
 }
 
 .popup-hover-stats {
